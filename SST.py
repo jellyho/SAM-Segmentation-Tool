@@ -24,10 +24,14 @@ class SST(QMainWindow, form_class):
         self.Retry.clicked.connect(self.btn_retry)
         self.base_dir = base_dir
         self.idx = 0
+        self.layeridx = 0
         if not os.path.isdir(base_dir+'/Mask'):
             print('Create Mask Folder')
             os.mkdir(base_dir+'/Mask')
         self.img_list = glob.glob(self.base_dir + '/Img/*')
+        self.filenameBox.addItems(self.img_list)
+        self.filenameBox.currentIndexChanged.connect(self.select)
+        self.layerBox.currentIndexChanged.connect(self.selectLayer)
         self.sam = sam_model_registry["vit_h"](checkpoint="sam_vit_h_4b8939.pth")
         self.sam.to(device='cuda')
         self.predictor = SamPredictor(self.sam)
@@ -41,7 +45,6 @@ class SST(QMainWindow, form_class):
                 self.predict_mask(pos)
 
     def load_img(self):
-        self.filename.setText(self.img_list[self.idx])
         image = cv2.imread(self.img_list[self.idx])
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         self.image = image
@@ -64,11 +67,14 @@ class SST(QMainWindow, form_class):
         masks, _, _ = self.predictor.predict(point_coords=input_point, point_labels=input_label)
         self.masks = masks > self.predictor.model.mask_threshold
         if len(self.masks) > 0:
-            self.show_mask(0)
+            self.layerBox.addItems([str(i) for i in range(len(self.masks))])
+            self.selectLayer(0)
 
-    def show_mask(self, idx):
-        mask = self.masks[idx]
-        color = np.array([30 / 255, 144 / 255, 255 / 255, 0.6])
+    def selectLayer(self, idx):
+        self.layeridx = idx
+        self.show_mask()
+    def show_mask(self):
+        mask = self.masks[self.layeridx]
         h, w = mask.shape[-2:]
         mask_image = mask.reshape(h, w, 1) * self.image
         h, w, ch = mask_image.shape
@@ -77,22 +83,28 @@ class SST(QMainWindow, form_class):
         pixmap = QPixmap.fromImage(image)
         self.pixmap.setPixmap(pixmap)
 
+    def select(self, idx):
+        self.idx = idx
+        self.load_img()
+
     def btn_prev(self):
         if self.idx != 0:
             self.idx -= 1
+            self.filenameBox.setCurrentIndex(self.idx)
             self.load_img()
 
     def btn_next(self):
         if self.idx != len(self.img_list)-1:
             self.idx += 1
+            self.filenameBox.setCurrentIndex(self.idx)
             self.load_img()
 
     def btn_make(self):
         if self.masks is not None:
             img_name = self.img_list[self.idx].split('\\')[-1].split('.')[0]
             with open(f"{self.base_dir}/Mask/{img_name}.npy", 'wb') as f:
-                np.save(f, self.masks[0])
-            self.btn_retry()
+                np.save(f, self.masks[self.layeridx])
+            self.status.setText(f"Saved - {self.base_dir}/Mask/{img_name}.npy")
 
     def btn_retry(self):
         h, w, ch = self.image.shape
@@ -101,6 +113,7 @@ class SST(QMainWindow, form_class):
         pixmap = QPixmap.fromImage(image)
         self.pixmap.setPixmap(pixmap)
         self.status.setText("Img Decoded")
+        self.layerBox.claer()
         self.masks = None
 
 
