@@ -9,7 +9,7 @@ Simple mask making using SAM, qt ui included.
   pip install git+https://github.com/facebookresearch/segment-anything.git
   pip install opencv-python pycocotools matplotlib onnxruntime onnx
   ```
-- download model weights to your BASE_DIR ![https://dl.fbaipublicfiles.com/segment_anything/sam_vit_h_4b8939.pth](https://dl.fbaipublicfiles.com/segment_anything/sam_vit_h_4b8939.pth)
+- download model weights to your BASE_DIR ![](https://dl.fbaipublicfiles.com/segment_anything/sam_vit_h_4b8939.pth)
 
 ### Prepare Images
 Put your Image that you want to make Masks for to BASE_DIR/Img
