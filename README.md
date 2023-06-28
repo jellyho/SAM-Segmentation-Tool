@@ -1,5 +1,5 @@
 # SAM-Segmentation-Tool
-Simple mask making using SAM, qt ui included.
+Simple mask making using SAM, QT UI included.
 
 ### Installation
 - torch cuda envrionment required
