@@ -25,6 +25,7 @@ class SST(QMainWindow, form_class):
         self.base_dir = base_dir
         self.idx = 0
         self.layeridx = 0
+        self.ready = False
         if not os.path.isdir(base_dir+'/Mask'):
             print('Create Mask Folder')
             os.mkdir(base_dir+'/Mask')
@@ -40,7 +41,7 @@ class SST(QMainWindow, form_class):
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
             pos = event.pos()
-            if pos.x() >= 70 and pos.x() <= 70+941 and pos.y() >= 100 and pos.y() <= 100+521:
+            if pos.x() >= 70 and pos.x() <= 70+941 and pos.y() >= 100 and pos.y() <= 100+521 and self.ready:
                 print("clicked")
                 self.predict_mask(pos)
 
@@ -54,7 +55,9 @@ class SST(QMainWindow, form_class):
         image = QImage(image.data, w, h, bytes_per_line, QImage.Format_RGB888)
         pixmap = QPixmap.fromImage(image)
         self.pixmap.setPixmap(pixmap)
+        self.layerBox.clear()
         self.status.setText("Img Decoded")
+        self.ready = True
 
     def predict_mask(self, pos):
         print('predict')
@@ -67,12 +70,14 @@ class SST(QMainWindow, form_class):
         masks, _, _ = self.predictor.predict(point_coords=input_point, point_labels=input_label)
         self.masks = masks > self.predictor.model.mask_threshold
         if len(self.masks) > 0:
+            self.layerBox.clear()
             self.layerBox.addItems([str(i) for i in range(len(self.masks))])
             self.selectLayer(0)
 
     def selectLayer(self, idx):
-        self.layeridx = idx
-        self.show_mask()
+        if idx is not None:
+            self.layeridx = idx
+            self.show_mask()
     def show_mask(self):
         mask = self.masks[self.layeridx]
         h, w = mask.shape[-2:]
@@ -85,18 +90,21 @@ class SST(QMainWindow, form_class):
 
     def select(self, idx):
         self.idx = idx
+        self.ready = False
         self.load_img()
 
     def btn_prev(self):
         if self.idx != 0:
             self.idx -= 1
             self.filenameBox.setCurrentIndex(self.idx)
+            self.ready = False
             self.load_img()
 
     def btn_next(self):
         if self.idx != len(self.img_list)-1:
             self.idx += 1
             self.filenameBox.setCurrentIndex(self.idx)
+            self.ready = False
             self.load_img()
 
     def btn_make(self):
@@ -112,8 +120,6 @@ class SST(QMainWindow, form_class):
         image = QImage(self.image.data, w, h, bytes_per_line, QImage.Format_RGB888)
         pixmap = QPixmap.fromImage(image)
         self.pixmap.setPixmap(pixmap)
-        self.status.setText("Img Decoded")
-        self.layerBox.claer()
         self.masks = None
 
 
