@@ -22,7 +22,9 @@ Put your Image that you want to make Masks for to BASE_DIR/Img
   ![image](https://github.com/jellyho/SAM-Segmentation-Tool/assets/20741606/a8028278-76f1-4715-9b33-f8afeb2e9721)
 
 - Select Mask layer that you want to make
-  ![image](https://github.com/jellyho/SAM-Segmentation-Tool/assets/20741606/def85590-2f50-4367-96ed-5a77af7e4afd)![image](https://github.com/jellyho/SAM-Segmentation-Tool/assets/20741606/ca4e1157-200c-4bfd-9e63-2ff495011227)![image](https://github.com/jellyho/SAM-Segmentation-Tool/assets/20741606/52587fa6-7bb0-4617-b228-5cc1bfe2f9e4)
+  ![image](https://github.com/jellyho/SAM-Segmentation-Tool/assets/20741606/def85590-2f50-4367-96ed-5a77af7e4afd)
+  ![image](https://github.com/jellyho/SAM-Segmentation-Tool/assets/20741606/ca4e1157-200c-4bfd-9e63-2ff495011227)
+  ![image](https://github.com/jellyho/SAM-Segmentation-Tool/assets/20741606/52587fa6-7bb0-4617-b228-5cc1bfe2f9e4)
 
 
 - Then press Make, .npy file will be stored at BASE_DIR/Mask/(img_name)_mask.npy
