@@ -28,7 +28,6 @@ class SST(QMainWindow, form_class):
             print('Create Mask Folder')
             os.mkdir(base_dir+'/Mask')
         self.img_list = glob.glob(self.base_dir + '/Img/*')
-        self.filename.setText(self.img_list[0])
         self.sam = sam_model_registry["vit_h"](checkpoint="sam_vit_h_4b8939.pth")
         self.sam.to(device='cuda')
         self.predictor = SamPredictor(self.sam)
@@ -42,6 +41,7 @@ class SST(QMainWindow, form_class):
                 self.predict_mask(pos)
 
     def load_img(self):
+        self.filename.setText(self.img_list[self.idx])
         image = cv2.imread(self.img_list[self.idx])
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         self.image = image
